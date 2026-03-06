@@ -5,6 +5,32 @@ struct ObservationDetailView: View {
     let observation: FieldObservation
     let survey: Survey
 
+    private var mapRegion: MKCoordinateRegion {
+        // Center on observation, but include track if possible
+        var allLats = [observation.latitude]
+        var allLons = [observation.longitude]
+        for tp in survey.sortedTrackPoints {
+            allLats.append(tp.latitude)
+            allLons.append(tp.longitude)
+        }
+        let minLat = allLats.min()!
+        let maxLat = allLats.max()!
+        let minLon = allLons.min()!
+        let maxLon = allLons.max()!
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        let latDelta = max((maxLat - minLat) * 1.3, 0.002)
+        let lonDelta = max((maxLon - minLon) * 1.3, 0.002)
+
+        return MKCoordinateRegion(
+            center: center,
+            span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+        )
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -50,20 +76,16 @@ struct ObservationDetailView: View {
     // MARK: - Map
 
     private var mapSection: some View {
-        Map {
-            if survey.sortedTrackPoints.count > 1 {
-                MapPolyline(coordinates: survey.sortedTrackPoints.map {
-                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-                })
-                .stroke(.blue, lineWidth: 2)
-            }
-            Marker(
-                observation.categoryLabel,
-                systemImage: "mappin",
-                coordinate: CLLocationCoordinate2D(latitude: observation.latitude, longitude: observation.longitude)
-            )
-            .tint(.orange)
-        }
+        OSMMapView(
+            trackCoordinates: survey.sortedTrackPoints.map {
+                CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+            },
+            annotations: [(
+                coordinate: CLLocationCoordinate2D(latitude: observation.latitude, longitude: observation.longitude),
+                title: observation.categoryLabel
+            )],
+            region: mapRegion
+        )
         .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }

@@ -7,10 +7,10 @@ struct SurveyDetailView: View {
     @State private var exportURL: URL?
     @State private var showShareSheet = false
 
-    private var mapPosition: MapCameraPosition {
+    private var mapRegion: MKCoordinateRegion? {
         let allCoords: [(Double, Double)] = survey.sortedTrackPoints.map { ($0.latitude, $0.longitude) }
             + survey.observations.map { ($0.latitude, $0.longitude) }
-        guard !allCoords.isEmpty else { return .automatic }
+        guard !allCoords.isEmpty else { return nil }
 
         let minLat = allCoords.map(\.0).min()!
         let maxLat = allCoords.map(\.0).max()!
@@ -24,10 +24,10 @@ struct SurveyDetailView: View {
         let latDelta = max((maxLat - minLat) * 1.3, 0.002)
         let lonDelta = max((maxLon - minLon) * 1.3, 0.002)
 
-        return .region(MKCoordinateRegion(
+        return MKCoordinateRegion(
             center: center,
             span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
-        ))
+        )
     }
 
     var body: some View {
@@ -36,6 +36,9 @@ struct SurveyDetailView: View {
             statsSection
             if !survey.notes.isEmpty {
                 notesSection
+            }
+            if !sortedObservations.isEmpty {
+                photosSection
             }
             observationsSection
         }
@@ -63,22 +66,16 @@ struct SurveyDetailView: View {
 
     private var mapSection: some View {
         Section {
-            Map(initialPosition: mapPosition) {
-                if survey.sortedTrackPoints.count > 1 {
-                    MapPolyline(coordinates: survey.sortedTrackPoints.map {
-                        CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-                    })
-                    .stroke(.blue, lineWidth: 3)
-                }
-                ForEach(survey.observations) { obs in
-                    Marker(
-                        obs.categoryLabel,
-                        systemImage: "mappin",
-                        coordinate: CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude)
-                    )
-                    .tint(.orange)
-                }
-            }
+            OSMMapView(
+                trackCoordinates: survey.sortedTrackPoints.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                },
+                annotations: survey.observations.map { obs in
+                    (coordinate: CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude),
+                     title: obs.categoryLabel)
+                },
+                region: mapRegion
+            )
             .frame(height: 250)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
@@ -104,6 +101,50 @@ struct SurveyDetailView: View {
         Section("Notes") {
             Text(survey.notes)
                 .font(.body)
+        }
+    }
+
+    private var photosSection: some View {
+        Section("Photos") {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 8) {
+                    ForEach(sortedObservations) { obs in
+                        NavigationLink(value: obs) {
+                            VStack(spacing: 4) {
+                                observationThumbnail(obs)
+                                Text(obs.timestamp.formatted(date: .omitted, time: .shortened))
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+            }
+            .listRowInsets(EdgeInsets())
+        }
+    }
+
+    private func observationThumbnail(_ observation: FieldObservation) -> some View {
+        Group {
+            let docsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let path = docsDir.appendingPathComponent("photos").appendingPathComponent(observation.photoFilename)
+            if let uiImage = UIImage(contentsOfFile: path.path) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 80, height: 80)
+                    .overlay {
+                        Image(systemName: "photo")
+                            .foregroundStyle(.secondary)
+                    }
+            }
         }
     }
 

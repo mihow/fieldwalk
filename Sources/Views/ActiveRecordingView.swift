@@ -7,15 +7,13 @@ struct ActiveRecordingView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: RecordingViewModel?
     @State private var locationService = LocationService()
-    @State private var cameraPosition: MapCameraPosition = .automatic
 
     var body: some View {
         if let viewModel {
             RecordingContentView(
                 survey: survey,
                 viewModel: viewModel,
-                locationService: locationService,
-                cameraPosition: $cameraPosition
+                locationService: locationService
             )
         } else {
             ProgressView("Starting...")
@@ -40,7 +38,7 @@ private struct RecordingContentView: View {
     let survey: Survey
     @Bindable var viewModel: RecordingViewModel
     let locationService: LocationService
-    @Binding var cameraPosition: MapCameraPosition
+    @State private var mapRegion: MKCoordinateRegion?
     @State private var hasInitialLocation = false
 
     var body: some View {
@@ -52,33 +50,26 @@ private struct RecordingContentView: View {
                 observationCount: survey.observations.count
             )
 
-            Map(position: $cameraPosition) {
-                UserAnnotation()
-                if survey.sortedTrackPoints.count > 1 {
-                    MapPolyline(coordinates: survey.sortedTrackPoints.map {
-                        CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-                    })
-                    .stroke(.blue, lineWidth: 3)
-                }
-                ForEach(survey.observations) { obs in
-                    Marker(obs.formEntries.first?.value ?? "Obs", coordinate:
-                        CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude))
-                    .tint(.orange)
-                }
-            }
-            .mapControls {
-                MapUserLocationButton()
-                MapCompass()
-            }
+            OSMMapView(
+                trackCoordinates: survey.sortedTrackPoints.map {
+                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+                },
+                annotations: survey.observations.map { obs in
+                    (coordinate: CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude),
+                     title: obs.categoryLabel)
+                },
+                region: mapRegion,
+                showsUserLocation: true
+            )
             .onChange(of: locationService.currentLocation) { _, newLocation in
                 guard let loc = newLocation else { return }
                 if !hasInitialLocation {
                     hasInitialLocation = true
-                    cameraPosition = .region(MKCoordinateRegion(
+                    mapRegion = MKCoordinateRegion(
                         center: loc.coordinate,
                         latitudinalMeters: 500,
                         longitudinalMeters: 500
-                    ))
+                    )
                 }
             }
 
