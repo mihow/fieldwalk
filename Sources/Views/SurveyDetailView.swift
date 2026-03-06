@@ -7,6 +7,29 @@ struct SurveyDetailView: View {
     @State private var exportURL: URL?
     @State private var showShareSheet = false
 
+    private var mapPosition: MapCameraPosition {
+        let allCoords: [(Double, Double)] = survey.sortedTrackPoints.map { ($0.latitude, $0.longitude) }
+            + survey.observations.map { ($0.latitude, $0.longitude) }
+        guard !allCoords.isEmpty else { return .automatic }
+
+        let minLat = allCoords.map(\.0).min()!
+        let maxLat = allCoords.map(\.0).max()!
+        let minLon = allCoords.map(\.1).min()!
+        let maxLon = allCoords.map(\.1).max()!
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        let latDelta = max((maxLat - minLat) * 1.3, 0.002)
+        let lonDelta = max((maxLon - minLon) * 1.3, 0.002)
+
+        return .region(MKCoordinateRegion(
+            center: center,
+            span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
+        ))
+    }
+
     var body: some View {
         List {
             mapSection
@@ -38,11 +61,9 @@ struct SurveyDetailView: View {
         }
     }
 
-    // MARK: - Map Section
-
     private var mapSection: some View {
         Section {
-            Map {
+            Map(initialPosition: mapPosition) {
                 if survey.sortedTrackPoints.count > 1 {
                     MapPolyline(coordinates: survey.sortedTrackPoints.map {
                         CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
@@ -64,8 +85,6 @@ struct SurveyDetailView: View {
         }
     }
 
-    // MARK: - Stats Section
-
     private var statsSection: some View {
         Section("Summary") {
             LabeledContent("Date", value: survey.startDate.formatted(date: .abbreviated, time: .shortened))
@@ -81,16 +100,12 @@ struct SurveyDetailView: View {
         }
     }
 
-    // MARK: - Notes Section
-
     private var notesSection: some View {
         Section("Notes") {
             Text(survey.notes)
                 .font(.body)
         }
     }
-
-    // MARK: - Observations Section
 
     private var observationsSection: some View {
         Section("Observations (\(survey.observations.count))") {
@@ -110,8 +125,6 @@ struct SurveyDetailView: View {
     private var sortedObservations: [FieldObservation] {
         survey.observations.sorted { $0.timestamp < $1.timestamp }
     }
-
-    // MARK: - Formatting Helpers
 
     private func formatDistance(_ meters: Double) -> String {
         if meters < 1000 {
@@ -140,8 +153,6 @@ struct SurveyDetailView: View {
         }
     }
 }
-
-// MARK: - ObservationRow
 
 struct ObservationRow: View {
     let observation: FieldObservation
@@ -182,8 +193,6 @@ struct ObservationRow: View {
         }
     }
 }
-
-// MARK: - Category helper
 
 extension FieldObservation {
     var categoryLabel: String {

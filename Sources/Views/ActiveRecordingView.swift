@@ -7,7 +7,7 @@ struct ActiveRecordingView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: RecordingViewModel?
     @State private var locationService = LocationService()
-    @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
+    @State private var cameraPosition: MapCameraPosition = .automatic
 
     var body: some View {
         if let viewModel {
@@ -41,6 +41,7 @@ private struct RecordingContentView: View {
     @Bindable var viewModel: RecordingViewModel
     let locationService: LocationService
     @Binding var cameraPosition: MapCameraPosition
+    @State private var hasInitialLocation = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -68,6 +69,17 @@ private struct RecordingContentView: View {
             .mapControls {
                 MapUserLocationButton()
                 MapCompass()
+            }
+            .onChange(of: locationService.currentLocation) { _, newLocation in
+                guard let loc = newLocation else { return }
+                if !hasInitialLocation {
+                    hasInitialLocation = true
+                    cameraPosition = .region(MKCoordinateRegion(
+                        center: loc.coordinate,
+                        latitudinalMeters: 500,
+                        longitudinalMeters: 500
+                    ))
+                }
             }
 
             controlBar
