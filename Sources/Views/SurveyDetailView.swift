@@ -7,29 +7,6 @@ struct SurveyDetailView: View {
     @State private var exportURL: URL?
     @State private var showShareSheet = false
 
-    private var mapRegion: MKCoordinateRegion? {
-        let allCoords: [(Double, Double)] = survey.sortedTrackPoints.map { ($0.latitude, $0.longitude) }
-            + survey.observations.map { ($0.latitude, $0.longitude) }
-        guard !allCoords.isEmpty else { return nil }
-
-        let minLat = allCoords.map(\.0).min()!
-        let maxLat = allCoords.map(\.0).max()!
-        let minLon = allCoords.map(\.1).min()!
-        let maxLon = allCoords.map(\.1).max()!
-
-        let center = CLLocationCoordinate2D(
-            latitude: (minLat + maxLat) / 2,
-            longitude: (minLon + maxLon) / 2
-        )
-        let latDelta = max((maxLat - minLat) * 1.3, 0.002)
-        let lonDelta = max((maxLon - minLon) * 1.3, 0.002)
-
-        return MKCoordinateRegion(
-            center: center,
-            span: MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: lonDelta)
-        )
-    }
-
     var body: some View {
         List {
             mapSection
@@ -66,15 +43,12 @@ struct SurveyDetailView: View {
 
     private var mapSection: some View {
         Section {
-            OSMMapView(
-                trackCoordinates: survey.sortedTrackPoints.map {
-                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-                },
+            LeafletMapView(
+                trackCoordinates: survey.sortedTrackPoints.map { ($0.latitude, $0.longitude) },
                 annotations: survey.observations.map { obs in
-                    (coordinate: CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude),
-                     title: obs.categoryLabel)
+                    (coordinate: (obs.latitude, obs.longitude), title: obs.categoryLabel)
                 },
-                region: mapRegion
+                showDirectionArrows: true
             )
             .frame(height: 250)
             .clipShape(RoundedRectangle(cornerRadius: 10))

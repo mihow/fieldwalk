@@ -38,8 +38,6 @@ private struct RecordingContentView: View {
     let survey: Survey
     @Bindable var viewModel: RecordingViewModel
     let locationService: LocationService
-    @State private var mapRegion: MKCoordinateRegion?
-    @State private var hasInitialLocation = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -50,28 +48,15 @@ private struct RecordingContentView: View {
                 observationCount: survey.observations.count
             )
 
-            OSMMapView(
-                trackCoordinates: survey.sortedTrackPoints.map {
-                    CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
-                },
+            LeafletMapView(
+                trackCoordinates: survey.sortedTrackPoints.map { ($0.latitude, $0.longitude) },
                 annotations: survey.observations.map { obs in
-                    (coordinate: CLLocationCoordinate2D(latitude: obs.latitude, longitude: obs.longitude),
-                     title: obs.categoryLabel)
+                    (coordinate: (obs.latitude, obs.longitude), title: obs.categoryLabel)
                 },
-                region: mapRegion,
-                showsUserLocation: true
+                showDirectionArrows: true,
+                followUser: true,
+                currentLocation: locationService.currentLocation.map { ($0.coordinate.latitude, $0.coordinate.longitude) }
             )
-            .onChange(of: locationService.currentLocation) { _, newLocation in
-                guard let loc = newLocation else { return }
-                if !hasInitialLocation {
-                    hasInitialLocation = true
-                    mapRegion = MKCoordinateRegion(
-                        center: loc.coordinate,
-                        latitudinalMeters: 500,
-                        longitudinalMeters: 500
-                    )
-                }
-            }
 
             controlBar
         }
