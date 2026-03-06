@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key><string>FieldWalk</string>
+    <key>CFBundleIdentifier</key><string>com.example.FieldWalk</string>
+    <key>CFBundleName</key><string>FieldWalk</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleShortVersionString</key><string>1.0</string>
+    <key>UILaunchScreen</key><dict/>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>FieldWalk records your path during surveys.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>FieldWalk uses the camera to capture observation photos.</string>
+    <key>UIBackgroundModes</key>
+    <array><string>location</string></array>
+</dict>
+</plist>
