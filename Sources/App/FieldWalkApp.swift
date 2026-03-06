@@ -7,6 +7,6 @@ struct FieldWalkApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [Survey.self])
+        .modelContainer(for: [Survey.self, TrackPoint.self, FieldObservation.self, FormEntry.self])
     }
 }
