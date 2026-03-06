@@ -4,6 +4,9 @@ import MapKit
 struct SurveyDetailView: View {
     let survey: Survey
 
+    @State private var exportURL: URL?
+    @State private var showShareSheet = false
+
     var body: some View {
         List {
             mapSection
@@ -17,9 +20,17 @@ struct SurveyDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(action: {}) {
+                Button(action: {
+                    exportURL = ExportService.exportURL(for: survey)
+                    if exportURL != nil { showShareSheet = true }
+                }) {
                     Label("Export", systemImage: "square.and.arrow.up")
                 }
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = exportURL {
+                ShareSheet(activityItems: [url])
             }
         }
         .navigationDestination(for: FieldObservation.self) { observation in
