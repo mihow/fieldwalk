@@ -2,4 +2,6 @@
 .swiftpm/
 DerivedData/
 FieldWalk.app/FieldWalk
-*.xcodeproj
+# Keep FieldWalk.xcodeproj tracked; ignore user-specific data inside it
+FieldWalk.xcodeproj/xcuserdata/
+FieldWalk.xcodeproj/project.xcworkspace/xcuserdata/
