@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BUNDLE="com.example.FieldWalk"
+BUNDLE="com.mixedneeds.FieldWalk"
 DEVICE="iPhone 17"
 SCREENSHOT_DIR="/tmp/fieldwalk_screenshots"
 mkdir -p "$SCREENSHOT_DIR"

@@ -25,6 +25,6 @@ echo "=== Installing on simulator ==="
 xcrun simctl install "$DEVICE" "$APP"
 
 echo "=== Launching ==="
-xcrun simctl launch "$DEVICE" com.example.FieldWalk
+xcrun simctl launch "$DEVICE" com.mixedneeds.FieldWalk
 
 echo "=== Done ==="

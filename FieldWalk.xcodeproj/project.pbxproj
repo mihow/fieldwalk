@@ -257,6 +257,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					84D8DE2361F9254FE384F3C4 = {
+						DevelopmentTeam = JPJ9P9U3D3;
+					};
 				};
 			};
 			buildConfigurationList = 30DC975A2A05E367CE824D34 /* Build configuration list for PBXProject "FieldWalk" */;
@@ -401,6 +404,7 @@
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "";
+				DEVELOPMENT_TEAM = JPJ9P9U3D3;
 				INFOPLIST_FILE = SupportingFiles/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "FieldWalk uses the camera to capture observation photos.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FieldWalk records your path during surveys.";
@@ -410,7 +414,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FieldWalk;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mixedneeds.FieldWalk;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.9;
@@ -488,6 +492,7 @@
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "";
+				DEVELOPMENT_TEAM = JPJ9P9U3D3;
 				INFOPLIST_FILE = SupportingFiles/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "FieldWalk uses the camera to capture observation photos.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "FieldWalk records your path during surveys.";
@@ -497,7 +502,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FieldWalk;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mixedneeds.FieldWalk;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.9;
@@ -518,7 +523,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FieldWalkTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mixedneeds.FieldWalkTests;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.9;
@@ -540,7 +545,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.FieldWalkTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mixedneeds.FieldWalkTests;
 				SDKROOT = iphoneos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 5.9;
