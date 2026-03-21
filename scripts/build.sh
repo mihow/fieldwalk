@@ -1,29 +1,30 @@
-#\!/bin/bash
+#!/bin/bash
 set -e
 cd ~/Projects/FieldWalk
 
+DEVICE="iPhone 17"
+
 echo "=== Building FieldWalk ==="
-xcodebuild -scheme FieldWalk \
+xcodebuild -project FieldWalk.xcodeproj \
+  -scheme FieldWalk \
   -sdk iphonesimulator \
-  -destination "platform=iOS Simulator,name=iPhone SE (3rd generation)" \
+  -destination "platform=iOS Simulator,name=$DEVICE" \
+  CODE_SIGN_IDENTITY="" \
+  CODE_SIGNING_REQUIRED=NO \
   build 2>&1 | tail -5
 
-# Find the built binary
-BINARY=$(find ~/Library/Developer/Xcode/DerivedData/FieldWalk-*/Build/Products/Debug-iphonesimulator/FieldWalk -maxdepth 0 2>/dev/null | head -1)
+# Find the built .app bundle
+APP=$(find ~/Library/Developer/Xcode/DerivedData/FieldWalk-*/Build/Products/Debug-iphonesimulator/FieldWalk.app -maxdepth 0 2>/dev/null | head -1)
 
-if [ -z "$BINARY" ]; then
-  echo "ERROR: Binary not found"
+if [ -z "$APP" ]; then
+  echo "ERROR: .app bundle not found"
   exit 1
 fi
 
-echo "=== Creating .app bundle ==="
-cp "$BINARY" FieldWalk.app/FieldWalk
-codesign --force --sign - --timestamp=none FieldWalk.app
-
 echo "=== Installing on simulator ==="
-xcrun simctl install "iPhone SE (3rd generation)" FieldWalk.app
+xcrun simctl install "$DEVICE" "$APP"
 
 echo "=== Launching ==="
-xcrun simctl launch "iPhone SE (3rd generation)" com.example.FieldWalk
+xcrun simctl launch "$DEVICE" com.example.FieldWalk
 
 echo "=== Done ==="
