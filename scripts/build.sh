@@ -2,7 +2,7 @@
 set -e
 cd ~/Projects/FieldWalk
 
-DEVICE="iPhone 17"
+DEVICE="iPhone 16e"
 
 echo "=== Building FieldWalk ==="
 xcodebuild -project FieldWalk.xcodeproj \

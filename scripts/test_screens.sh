@@ -2,7 +2,7 @@
 set -e
 
 BUNDLE="com.mixedneeds.FieldWalk"
-DEVICE="iPhone 17"
+DEVICE="iPhone 16e"
 SCREENSHOT_DIR="/tmp/fieldwalk_screenshots"
 mkdir -p "$SCREENSHOT_DIR"
 

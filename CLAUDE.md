@@ -18,8 +18,8 @@
 
 ## Build & Simulator
 - Default simulator: iPhone 17 (iOS 26)
-- Build command: `xcodebuild -project FieldWalk.xcodeproj -scheme FieldWalk -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 17" build`
-- Simulator install: `xcrun simctl install "iPhone 17" /path/to/FieldWalk.app`
+- Build command: `xcodebuild -project FieldWalk.xcodeproj -scheme FieldWalk -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 16e" build`
+- Simulator install: `xcrun simctl install "iPhone 16e" /path/to/FieldWalk.app`
 - Screenshots: `xcrun simctl io booted screenshot output.png`
 
 ## Agent Behavior
@@ -32,7 +32,7 @@
 
 ## Testing
 - Write tests for business logic and services
-- Run tests: `xcodebuild -project FieldWalk.xcodeproj -scheme FieldWalkTests -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 17" test`
+- Run tests: `xcodebuild -project FieldWalk.xcodeproj -scheme FieldWalkTests -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 16e" test`
 
 ## Branch & Merge
 - Feature branches: `build/YYYY-MM-DD-<topic>`
